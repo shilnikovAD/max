@@ -251,7 +251,7 @@ components:
       required:
         - tutor_id
         - subject_id
-        - level
+        - level_id
       properties:
         tutor_id:
           type: integer
@@ -259,9 +259,10 @@ components:
         subject_id:
           type: integer
           example: 3
-        level:
-          type: string
-          example: ege
+        level_id:
+          type: integer
+          description: Education level ID (1=ЕГЭ, 2=ОГЭ, etc.). Use GET /levels to get available levels.
+          example: 1
         goal:
           type: string
           maxLength: 500
