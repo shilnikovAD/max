@@ -61,6 +61,8 @@ FizTech Tutors provides a simple way for users (school students, university stud
 max/
 ├── api/
 │   └── openapi.yaml          # OpenAPI 3.0.3 specification
+├── content/
+│   └── pages.md              # Website page content (Russian)
 ├── db/
 │   └── migrations/
 │       ├── 001_initial_schema.sql   # Database schema
