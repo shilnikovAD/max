@@ -1,0 +1,1740 @@
+openapi: 3.0.3
+info:
+  title: FizTech Tutors API
+  description: |
+    REST API for FizTech Tutors platform - a marketplace connecting students/parents
+    with MIPT-affiliated tutors for personalized education.
+    
+    ## Authentication
+    The API uses JWT Bearer tokens for authentication. Obtain tokens via `/auth/login`
+    and include them in the `Authorization` header as `Bearer <token>`.
+    
+    ## Roles
+    - **STUDENT**: Can browse tutors, create lesson requests, leave reviews
+    - **TUTOR**: Can manage profile, handle lesson requests, chat with students
+    - **ADMIN**: Can moderate tutors, reviews, and manage users
+  version: 1.0.0
+  contact:
+    email: support@fiztechtutors.ru
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: /api/v1
+    description: API v1
+
+tags:
+  - name: Auth
+    description: Authentication and registration
+  - name: Users
+    description: User profile management
+  - name: Students
+    description: Student profile operations
+  - name: Tutors
+    description: Tutor catalog and profiles
+  - name: Subjects
+    description: Subject reference data
+  - name: Levels
+    description: Education level reference data
+  - name: Faculties
+    description: MIPT faculty reference data
+  - name: Lesson Requests
+    description: Lesson request management
+  - name: Reviews
+    description: Tutor reviews and ratings
+  - name: Favorites
+    description: Student favorite tutors
+  - name: Messages
+    description: In-app messaging
+  - name: Admin
+    description: Administrative operations
+
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT access token
+
+  schemas:
+    # Enums
+    UserRole:
+      type: string
+      enum: [STUDENT, TUTOR, ADMIN]
+      description: User role in the system
+
+    TutorStatus:
+      type: string
+      enum: [PENDING, APPROVED, REJECTED, HIDDEN]
+      description: Tutor profile moderation status
+
+    TutorFormat:
+      type: string
+      enum: [ONLINE, OFFLINE, BOTH]
+      description: Teaching format preference
+
+    LessonRequestStatus:
+      type: string
+      enum: [NEW, IN_PROGRESS, COMPLETED, REJECTED]
+      description: Status of a lesson request
+
+    ReviewStatus:
+      type: string
+      enum: [VISIBLE, HIDDEN, PENDING]
+      description: Review moderation status
+
+    # Request Bodies
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - password
+        - role
+        - name
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: securePassword123
+        role:
+          $ref: '#/components/schemas/UserRole'
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Иван Петров
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          example: securePassword123
+
+    RefreshTokenRequest:
+      type: object
+      required:
+        - refreshToken
+      properties:
+        refreshToken:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Иван Иванов
+
+    UpdateStudentRequest:
+      type: object
+      properties:
+        grade:
+          type: string
+          maxLength: 50
+          example: "11 класс"
+        city:
+          type: string
+          maxLength: 100
+          example: Москва
+        telegram:
+          type: string
+          maxLength: 100
+          example: "@ivan_student"
+
+    CreateTutorRequest:
+      type: object
+      required:
+        - faculty
+        - study_year
+        - price_per_hour
+        - format
+        - subject_ids
+        - level_ids
+      properties:
+        faculty:
+          type: string
+          maxLength: 100
+          example: ФРКТ
+        study_year:
+          type: string
+          maxLength: 50
+          example: "4 курс"
+        about:
+          type: string
+          maxLength: 2000
+          example: Студент 4 курса ФРКТ, специализируюсь на физике и математике.
+        price_per_hour:
+          type: integer
+          minimum: 100
+          maximum: 50000
+          example: 1500
+        format:
+          $ref: '#/components/schemas/TutorFormat'
+        city:
+          type: string
+          maxLength: 100
+          example: Москва
+        subject_ids:
+          type: array
+          items:
+            type: integer
+          minItems: 1
+          example: [1, 2]
+        level_ids:
+          type: array
+          items:
+            type: integer
+          minItems: 1
+          example: [1, 2, 3]
+
+    UpdateTutorRequest:
+      type: object
+      properties:
+        faculty:
+          type: string
+          maxLength: 100
+          example: ФРКТ
+        study_year:
+          type: string
+          maxLength: 50
+          example: выпускник 2023
+        about:
+          type: string
+          maxLength: 2000
+          example: Опытный репетитор с 3-летним стажем.
+        price_per_hour:
+          type: integer
+          minimum: 100
+          maximum: 50000
+          example: 2000
+        format:
+          $ref: '#/components/schemas/TutorFormat'
+        city:
+          type: string
+          maxLength: 100
+          example: Долгопрудный
+        subject_ids:
+          type: array
+          items:
+            type: integer
+          example: [1, 2, 3]
+        level_ids:
+          type: array
+          items:
+            type: integer
+          example: [1, 2, 3, 4]
+
+    CreateLessonRequestRequest:
+      type: object
+      required:
+        - tutor_id
+        - subject_id
+        - level_id
+      properties:
+        tutor_id:
+          type: integer
+          example: 12
+        subject_id:
+          type: integer
+          example: 3
+        level_id:
+          type: integer
+          description: Education level ID (1=ЕГЭ, 2=ОГЭ, etc.). Use GET /levels to get available levels.
+          example: 1
+        goal:
+          type: string
+          maxLength: 500
+          example: Подготовка к ЕГЭ по физике с 70 до 90+
+        preferred_time:
+          type: string
+          maxLength: 200
+          example: вечер будних, кроме четверга
+        comment:
+          type: string
+          maxLength: 1000
+          example: "11 класс, уже решаю 18-19 задачи"
+
+    UpdateLessonRequestStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: '#/components/schemas/LessonRequestStatus'
+
+    CreateReviewRequest:
+      type: object
+      required:
+        - tutor_id
+        - lesson_request_id
+        - rating
+      properties:
+        tutor_id:
+          type: integer
+          example: 12
+        lesson_request_id:
+          type: integer
+          example: 55
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 5
+        text:
+          type: string
+          maxLength: 2000
+          example: Очень помог с подготовкой к экзамену
+
+    AddFavoriteRequest:
+      type: object
+      required:
+        - tutor_id
+      properties:
+        tutor_id:
+          type: integer
+          example: 12
+
+    CreateMessageRequest:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+          minLength: 1
+          maxLength: 5000
+          example: Здравствуйте, давайте созвонимся завтра?
+
+    UpdateReviewStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: '#/components/schemas/ReviewStatus'
+
+    # Response Bodies
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        refreshToken:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        user:
+          $ref: '#/components/schemas/User'
+
+    TokenResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        refreshToken:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        name:
+          type: string
+          example: Иван Петров
+        role:
+          $ref: '#/components/schemas/UserRole'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Student:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        grade:
+          type: string
+          example: "11 класс"
+        city:
+          type: string
+          example: Москва
+        telegram:
+          type: string
+          example: "@ivan_student"
+
+    TutorCard:
+      type: object
+      description: Compact tutor card for catalog listing
+      properties:
+        id:
+          type: integer
+          example: 12
+        user:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 8
+            name:
+              type: string
+              example: Иван Петров
+        faculty:
+          type: string
+          example: ФРКТ
+        subjects:
+          type: array
+          items:
+            type: string
+          example: ["Физика", "Математика"]
+        price_per_hour:
+          type: integer
+          example: 1500
+        rating:
+          type: number
+          format: float
+          example: 4.9
+        city:
+          type: string
+          example: Москва
+        format:
+          $ref: '#/components/schemas/TutorFormat'
+        about:
+          type: string
+          example: Опытный репетитор, студент 4 курса МФТИ
+
+    TutorDetail:
+      type: object
+      description: Full tutor profile details
+      properties:
+        id:
+          type: integer
+          example: 12
+        user:
+          $ref: '#/components/schemas/User'
+        faculty:
+          type: string
+          example: ФРКТ
+        study_year:
+          type: string
+          example: "4 курс"
+        about:
+          type: string
+          example: Студент 4 курса ФРКТ, специализируюсь на физике и математике. Готовлю к ЕГЭ и олимпиадам.
+        price_per_hour:
+          type: integer
+          example: 1500
+        format:
+          $ref: '#/components/schemas/TutorFormat'
+        city:
+          type: string
+          example: Москва
+        status:
+          $ref: '#/components/schemas/TutorStatus'
+        subjects:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subject'
+        levels:
+          type: array
+          items:
+            $ref: '#/components/schemas/Level'
+        rating:
+          type: number
+          format: float
+          example: 4.9
+        reviews_count:
+          type: integer
+          example: 15
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    TutorListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TutorCard'
+        page:
+          type: integer
+          example: 1
+        page_size:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          example: 132
+
+    Subject:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Физика
+
+    Level:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        code:
+          type: string
+          example: ege
+        name:
+          type: string
+          example: ЕГЭ
+
+    Faculty:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        code:
+          type: string
+          example: frkt
+        name:
+          type: string
+          example: ФРКТ
+
+    LessonRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 55
+        student:
+          $ref: '#/components/schemas/Student'
+        tutor:
+          $ref: '#/components/schemas/TutorCard'
+        subject:
+          $ref: '#/components/schemas/Subject'
+        level:
+          $ref: '#/components/schemas/Level'
+        goal:
+          type: string
+          example: Подготовка к ЕГЭ по физике с 70 до 90+
+        preferred_time:
+          type: string
+          example: вечер будних, кроме четверга
+        comment:
+          type: string
+          example: "11 класс, уже решаю 18-19 задачи"
+        status:
+          $ref: '#/components/schemas/LessonRequestStatus'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Review:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        tutor_id:
+          type: integer
+          example: 12
+        student:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: Мария С.
+        lesson_request_id:
+          type: integer
+          example: 55
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 5
+        text:
+          type: string
+          example: Очень помог с подготовкой к экзамену
+        status:
+          $ref: '#/components/schemas/ReviewStatus'
+        created_at:
+          type: string
+          format: date-time
+
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        lesson_request_id:
+          type: integer
+          example: 55
+        sender:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 8
+            name:
+              type: string
+              example: Иван Петров
+        text:
+          type: string
+          example: Здравствуйте, давайте созвонимся завтра?
+        created_at:
+          type: string
+          format: date-time
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          example: Invalid request parameters
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: email
+              message:
+                type: string
+                example: Invalid email format
+
+    PaginatedResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items: {}
+        page:
+          type: integer
+          example: 1
+        page_size:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          example: 100
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: VALIDATION_ERROR
+            message: Invalid request parameters
+            details:
+              - field: email
+                message: Invalid email format
+
+    Unauthorized:
+      description: Authentication required or token expired
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: UNAUTHORIZED
+            message: Authentication required
+
+    Forbidden:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: FORBIDDEN
+            message: You don't have permission to access this resource
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: NOT_FOUND
+            message: Resource not found
+
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: INTERNAL_ERROR
+            message: An unexpected error occurred
+
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      description: Page number (starts from 1)
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+    PageSizeParam:
+      name: page_size
+      in: query
+      description: Number of items per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+paths:
+  # Auth endpoints
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Register a new user
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Email already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: EMAIL_EXISTS
+                message: Email is already registered
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login with email and password
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: INVALID_CREDENTIALS
+                message: Invalid email or password
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Refresh access token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          description: Invalid or expired refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: INVALID_TOKEN
+                message: Refresh token is invalid or expired
+
+  # User endpoints
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Get current user profile
+      responses:
+        '200':
+          description: User profile retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    put:
+      tags: [Users]
+      summary: Update current user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: User profile updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # Student endpoints
+  /students/me:
+    get:
+      tags: [Students]
+      summary: Get current student profile
+      description: Only available for users with STUDENT role
+      responses:
+        '200':
+          description: Student profile retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    put:
+      tags: [Students]
+      summary: Update current student profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStudentRequest'
+      responses:
+        '200':
+          description: Student profile updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # Reference data endpoints
+  /subjects:
+    get:
+      tags: [Subjects]
+      summary: Get all available subjects
+      security: []
+      responses:
+        '200':
+          description: List of subjects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Subject'
+              example:
+                - id: 1
+                  name: Физика
+                - id: 2
+                  name: Математика
+                - id: 3
+                  name: Информатика
+
+  /levels:
+    get:
+      tags: [Levels]
+      summary: Get all available education levels
+      security: []
+      responses:
+        '200':
+          description: List of education levels
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Level'
+              example:
+                - id: 1
+                  code: ege
+                  name: ЕГЭ
+                - id: 2
+                  code: oge
+                  name: ОГЭ
+                - id: 3
+                  code: olymp
+                  name: Олимпиады
+                - id: 4
+                  code: university
+                  name: Вуз
+                - id: 5
+                  code: mipt_exam
+                  name: МФТИ-вступительные
+
+  /faculties:
+    get:
+      tags: [Faculties]
+      summary: Get all MIPT faculties
+      security: []
+      responses:
+        '200':
+          description: List of MIPT faculties
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Faculty'
+              example:
+                - id: 1
+                  code: frkt
+                  name: ФРКТ
+                - id: 2
+                  code: fpmi
+                  name: ФПМИ
+                - id: 3
+                  code: fopf
+                  name: ФОПФ
+
+  # Tutor endpoints
+  /tutors:
+    get:
+      tags: [Tutors]
+      summary: Get tutors catalog with filters
+      description: |
+        Returns a paginated list of approved tutors with filtering and sorting options.
+        All filters can be combined. Invalid parameters return 400 error.
+      security: []
+      parameters:
+        - name: subject_id
+          in: query
+          description: Filter by subject ID
+          schema:
+            type: integer
+        - name: level
+          in: query
+          description: Filter by education level code (e.g., ege, oge, olymp)
+          schema:
+            type: string
+        - name: faculty
+          in: query
+          description: Filter by faculty name or code
+          schema:
+            type: string
+        - name: price_min
+          in: query
+          description: Minimum price per hour
+          schema:
+            type: integer
+            minimum: 0
+        - name: price_max
+          in: query
+          description: Maximum price per hour
+          schema:
+            type: integer
+        - name: rating_min
+          in: query
+          description: Minimum average rating (1-5)
+          schema:
+            type: number
+            minimum: 1
+            maximum: 5
+        - name: city
+          in: query
+          description: Filter by city (for offline tutoring)
+          schema:
+            type: string
+        - name: format
+          in: query
+          description: Filter by teaching format
+          schema:
+            type: string
+            enum: [online, offline, both]
+        - name: sort
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            enum: [rating_desc, price_asc, price_desc, experience_desc]
+            default: rating_desc
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PageSizeParam'
+      responses:
+        '200':
+          description: Paginated list of tutors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TutorListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /tutors/{id}:
+    get:
+      tags: [Tutors]
+      summary: Get tutor details by ID
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Tutor details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TutorDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /tutors/me:
+    get:
+      tags: [Tutors]
+      summary: Get current tutor profile
+      description: Only available for users with TUTOR role
+      responses:
+        '200':
+          description: Current tutor profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TutorDetail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Tutor profile not created yet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags: [Tutors]
+      summary: Create tutor profile
+      description: Create a new tutor profile for the current user (TUTOR role required)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTutorRequest'
+      responses:
+        '201':
+          description: "Tutor profile created (status: PENDING)"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TutorDetail'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Tutor profile already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags: [Tutors]
+      summary: Update tutor profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTutorRequest'
+      responses:
+        '200':
+          description: Tutor profile updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TutorDetail'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Lesson request endpoints
+  /lesson-requests:
+    post:
+      tags: [Lesson Requests]
+      summary: Create a lesson request
+      description: Only available for users with STUDENT role
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLessonRequestRequest'
+      responses:
+        '201':
+          description: Lesson request created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonRequest'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Tutor not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /lesson-requests/me:
+    get:
+      tags: [Lesson Requests]
+      summary: Get my lesson requests (as student)
+      description: Returns lesson requests created by the current student
+      parameters:
+        - name: status
+          in: query
+          description: Filter by status
+          schema:
+            $ref: '#/components/schemas/LessonRequestStatus'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PageSizeParam'
+      responses:
+        '200':
+          description: List of lesson requests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LessonRequest'
+                  page:
+                    type: integer
+                  page_size:
+                    type: integer
+                  total:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /tutors/me/lesson-requests:
+    get:
+      tags: [Lesson Requests]
+      summary: Get lesson requests for current tutor
+      description: Returns lesson requests sent to the current tutor
+      parameters:
+        - name: status
+          in: query
+          description: Filter by status
+          schema:
+            $ref: '#/components/schemas/LessonRequestStatus'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PageSizeParam'
+      responses:
+        '200':
+          description: List of lesson requests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LessonRequest'
+                  page:
+                    type: integer
+                  page_size:
+                    type: integer
+                  total:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /lesson-requests/{id}:
+    get:
+      tags: [Lesson Requests]
+      summary: Get lesson request details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lesson request details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [Lesson Requests]
+      summary: Update lesson request status
+      description: Only available for the tutor assigned to this request
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateLessonRequestStatusRequest'
+      responses:
+        '200':
+          description: Lesson request updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonRequest'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Review endpoints
+  /reviews:
+    post:
+      tags: [Reviews]
+      summary: Create a review
+      description: |
+        Only available for users with STUDENT role.
+        Can only review tutors for completed lesson requests.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReviewRequest'
+      responses:
+        '201':
+          description: Review created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          description: Invalid request or lesson not completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Review already exists for this lesson request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /tutors/{id}/reviews:
+    get:
+      tags: [Reviews]
+      summary: Get reviews for a tutor
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PageSizeParam'
+      responses:
+        '200':
+          description: List of reviews
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Review'
+                  page:
+                    type: integer
+                  page_size:
+                    type: integer
+                  total:
+                    type: integer
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Favorites endpoints
+  /favorites:
+    get:
+      tags: [Favorites]
+      summary: Get favorite tutors
+      description: Only available for users with STUDENT role
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PageSizeParam'
+      responses:
+        '200':
+          description: List of favorite tutors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TutorCard'
+                  page:
+                    type: integer
+                  page_size:
+                    type: integer
+                  total:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags: [Favorites]
+      summary: Add tutor to favorites
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddFavoriteRequest'
+      responses:
+        '201':
+          description: Tutor added to favorites
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Tutor already in favorites
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /favorites/{tutor_id}:
+    delete:
+      tags: [Favorites]
+      summary: Remove tutor from favorites
+      parameters:
+        - name: tutor_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Tutor removed from favorites
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Message endpoints
+  /lesson-requests/{id}/messages:
+    get:
+      tags: [Messages]
+      summary: Get messages for a lesson request
+      description: Only available for participants of the lesson request
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PageSizeParam'
+      responses:
+        '200':
+          description: List of messages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Message'
+                  page:
+                    type: integer
+                  page_size:
+                    type: integer
+                  total:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags: [Messages]
+      summary: Send a message
+      description: Only available for participants of the lesson request
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMessageRequest'
+      responses:
+        '201':
+          description: Message sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Admin endpoints
+  /admin/users:
+    get:
+      tags: [Admin]
+      summary: List all users
+      description: Only available for ADMIN role
+      parameters:
+        - name: role
+          in: query
+          description: Filter by role
+          schema:
+            $ref: '#/components/schemas/UserRole'
+        - name: search
+          in: query
+          description: Search by name or email
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PageSizeParam'
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  page:
+                    type: integer
+                  page_size:
+                    type: integer
+                  total:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/tutors:
+    get:
+      tags: [Admin]
+      summary: List tutors for moderation
+      description: Only available for ADMIN role
+      parameters:
+        - name: status
+          in: query
+          description: Filter by status
+          schema:
+            $ref: '#/components/schemas/TutorStatus'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PageSizeParam'
+      responses:
+        '200':
+          description: List of tutors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TutorDetail'
+                  page:
+                    type: integer
+                  page_size:
+                    type: integer
+                  total:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/tutors/{id}/approve:
+    post:
+      tags: [Admin]
+      summary: Approve tutor profile
+      description: Only available for ADMIN role
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Tutor approved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TutorDetail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /admin/tutors/{id}/reject:
+    post:
+      tags: [Admin]
+      summary: Reject tutor profile
+      description: Only available for ADMIN role
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Tutor rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TutorDetail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /admin/reviews/{id}:
+    patch:
+      tags: [Admin]
+      summary: Update review status
+      description: Only available for ADMIN role
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateReviewStatusRequest'
+      responses:
+        '200':
+          description: Review status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /admin/dashboard:
+    get:
+      tags: [Admin]
+      summary: Get dashboard statistics
+      description: Only available for ADMIN role
+      responses:
+        '200':
+          description: Dashboard statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_users:
+                    type: integer
+                    example: 500
+                  total_students:
+                    type: integer
+                    example: 350
+                  total_tutors:
+                    type: integer
+                    example: 150
+                  pending_tutors:
+                    type: integer
+                    example: 12
+                  total_lesson_requests:
+                    type: integer
+                    example: 1200
+                  active_lesson_requests:
+                    type: integer
+                    example: 45
+                  total_reviews:
+                    type: integer
+                    example: 890
+                  pending_reviews:
+                    type: integer
+                    example: 5
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
