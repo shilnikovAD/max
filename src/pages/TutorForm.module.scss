@@ -21,6 +21,50 @@
   text-align: center;
 }
 
+.infoMessage {
+  padding: 16px;
+  background-color: #e7f3ff;
+  border: 2px solid #b3d9ff;
+  border-radius: 8px;
+  color: #0066cc;
+  font-weight: 500;
+  margin-bottom: 24px;
+  animation: slideIn 0.3s ease;
+}
+
+.errorMessage {
+  padding: 16px;
+  background-color: #fee;
+  border: 2px solid #fcc;
+  border-radius: 8px;
+  color: #c33;
+  font-weight: 600;
+  margin-bottom: 24px;
+  animation: slideIn 0.3s ease;
+}
+
+.successMessage {
+  padding: 16px;
+  background-color: #efe;
+  border: 2px solid #cfc;
+  border-radius: 8px;
+  color: #3c3;
+  font-weight: 600;
+  margin-bottom: 24px;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .form {
   display: flex;
   flex-direction: column;

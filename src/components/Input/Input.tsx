@@ -24,15 +24,19 @@ export const Input: React.FC<InputProps> = ({
   required = false,
   className = '',
 }) => {
+  // Генерируем уникальный id для связи label и input
+  const inputId = React.useId();
+
   return (
     <div className={`${styles.inputWrapper} ${className}`}>
       {label && (
-        <label className={styles.label}>
+        <label htmlFor={inputId} className={styles.label}>
           {label}
           {required && <span className={styles.required}>*</span>}
         </label>
       )}
       <input
+        id={inputId}
         type={type}
         className={`${styles.input} ${error ? styles.error : ''}`}
         placeholder={placeholder}

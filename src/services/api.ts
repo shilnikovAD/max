@@ -21,18 +21,58 @@ const api = axios.create({
 // Helper function to simulate API delay
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Runtime storage for created/updated tutors (only for mock mode)
+const runtimeTutors: Map<number, TutorDetails> = new Map();
+
 // API methods for tutors
 export const tutorsApi = {
   // Fetch all tutors with optional filters
   fetchTutors: async (filters?: TutorFilters): Promise<TutorsResponse> => {
     if (USE_MOCK_DATA) {
       await delay(500);
-      let filteredTutors = [...mockTutors];
+      // Combine mock tutors with runtime created tutors
+      const runtimeTutorsArray = Array.from(runtimeTutors.values()).map(
+        (details) => ({
+          id: details.id,
+          user_id: details.user_id,
+          first_name: details.first_name,
+          last_name: details.last_name,
+          photo_url: details.photo_url,
+          bio: details.bio,
+          education: details.education,
+          faculty: details.faculty,
+          graduation_year: details.graduation_year,
+          experience_years: details.experience_years,
+          price_per_hour: details.price_per_hour,
+          format: details.format,
+          city: details.city,
+          avg_rating: details.avg_rating,
+          reviews_count: details.reviews_count,
+          status: details.status,
+          created_at: details.created_at,
+          updated_at: details.updated_at,
+        })
+      );
 
+      let filteredTutors = [...mockTutors, ...runtimeTutorsArray];
+
+      // Фильтр по цене
       if (filters?.price_max) {
         filteredTutors = filteredTutors.filter(
           (t) => t.price_per_hour <= filters.price_max!
         );
+      }
+
+      // Фильтр по предмету
+      if (filters?.subject_id) {
+        filteredTutors = filteredTutors.filter((tutor) => {
+          // Проверяем есть ли у репетитора этот предмет
+          const tutorDetails = mockTutorDetails[tutor.id];
+          if (!tutorDetails) return false;
+          return tutorDetails.subjects.some(
+            (subject) => subject.subject_id === filters.subject_id
+          );
+        });
       }
 
       return {
@@ -53,6 +93,13 @@ export const tutorsApi = {
   fetchTutorById: async (id: number): Promise<TutorDetails> => {
     if (USE_MOCK_DATA) {
       await delay(300);
+
+      // Check runtime storage first (for newly created tutors)
+      if (runtimeTutors.has(id)) {
+        return runtimeTutors.get(id)!;
+      }
+
+      // Then check mock data
       const tutor = mockTutorDetails[id];
       if (!tutor) {
         throw new Error('Tutor not found');
@@ -74,15 +121,26 @@ export const tutorsApi = {
         user_id: timestamp + 1000, // Offset to ensure unique ID
         first_name: 'Новый',
         last_name: 'Репетитор',
+        photo_url: '',
         ...data,
         avg_rating: 0,
         reviews_count: 0,
-        status: 'PENDING',
+        status: 'APPROVED', // Auto-approve in demo mode
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        subjects: [],
-        levels: [],
+        subjects: data.subject_ids.map((id) => ({
+          subject_id: id,
+          subject_name: 'Предмет',
+        })),
+        levels: data.level_codes.map((code) => ({
+          level_code: code,
+          level_name: code.toUpperCase(),
+        })),
       };
+
+      // Save to runtime storage so it can be fetched later
+      runtimeTutors.set(newTutor.id, newTutor);
+
       return newTutor;
     }
 
@@ -97,15 +155,29 @@ export const tutorsApi = {
   ): Promise<TutorDetails> => {
     if (USE_MOCK_DATA) {
       await delay(500);
-      const existingTutor = mockTutorDetails[id];
+
+      // Check runtime storage first
+      let existingTutor = runtimeTutors.get(id);
+
+      // If not in runtime, check mock data
+      if (!existingTutor) {
+        existingTutor = mockTutorDetails[id];
+      }
+
       if (!existingTutor) {
         throw new Error('Tutor not found');
       }
-      return {
+
+      const updatedTutor = {
         ...existingTutor,
         ...data,
         updated_at: new Date().toISOString(),
       };
+
+      // Save to runtime storage
+      runtimeTutors.set(id, updatedTutor);
+
+      return updatedTutor;
     }
 
     const response = await api.put<TutorDetails>(`/tutors/me`, data);

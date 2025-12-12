@@ -37,6 +37,9 @@ export const TutorForm: React.FC = () => {
     level_codes: ['ege'],
   });
 
+  const [submitError, setSubmitError] = useState<string>('');
+  const [submitSuccess, setSubmitSuccess] = useState<boolean>(false);
+
   const isEdit = !!id;
 
   useEffect(() => {
@@ -67,18 +70,53 @@ export const TutorForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitError('');
+    setSubmitSuccess(false);
+
+    // Валидация
+    if (!formData.education.trim()) {
+      setSubmitError('Пожалуйста, укажите образование');
+      return;
+    }
+    if (!formData.bio.trim()) {
+      setSubmitError('Пожалуйста, расскажите о себе');
+      return;
+    }
+    if (formData.price_per_hour < 100) {
+      setSubmitError('Стоимость должна быть не менее 100 ₽');
+      return;
+    }
 
     try {
+      let result;
       if (isEdit && id) {
-        await dispatch(
+        result = await dispatch(
           updateTutor({ id: parseInt(id, 10), data: formData })
         ).unwrap();
       } else {
-        await dispatch(createTutor(formData)).unwrap();
+        result = await dispatch(createTutor(formData)).unwrap();
       }
-      navigate('/');
+
+      setSubmitSuccess(true);
+
+      // Показываем успешное сообщение на 2 секунды, затем переходим
+      setTimeout(() => {
+        if (result && result.id) {
+          // Переходим к созданному/обновленному профилю
+          navigate(`/tutor/${result.id}`);
+        } else {
+          // Или на главную
+          navigate('/');
+        }
+      }, 2000);
+
     } catch (error) {
       console.error('Failed to save tutor:', error);
+      setSubmitError(
+        isEdit
+          ? 'Не удалось обновить профиль. Попробуйте еще раз.'
+          : 'Не удалось создать профиль. Попробуйте еще раз.'
+      );
     }
   };
 
@@ -104,6 +142,24 @@ export const TutorForm: React.FC = () => {
           <h1 className={styles.title}>
             {isEdit ? 'Редактировать профиль' : 'Создать профиль репетитора'}
           </h1>
+
+          {!isEdit && !submitSuccess && !submitError && (
+            <div className={styles.infoMessage}>
+              ℹ️ Это демо-версия. Данные сохраняются локально и будут доступны в каталоге репетиторов.
+            </div>
+          )}
+
+          {submitError && (
+            <div className={styles.errorMessage}>
+              ⚠️ {submitError}
+            </div>
+          )}
+
+          {submitSuccess && (
+            <div className={styles.successMessage}>
+              ✅ {isEdit ? 'Профиль успешно обновлен!' : 'Профиль успешно создан! Перенаправляем к профилю...'}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className={styles.form}>
             <Input
