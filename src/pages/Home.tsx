@@ -7,6 +7,7 @@ import {
   selectTutorsStatus,
   selectTutorsError,
 } from '@/features/tutors/tutorsSelectors';
+import { selectFavoritesCount } from '@/features/favorites/favoritesSelectors';
 import { TutorCard } from '@/components/TutorCard/TutorCard';
 import { Button } from '@/components/Button/Button';
 import { Input } from '@/components/Input/Input';
@@ -18,6 +19,7 @@ export const Home: React.FC = () => {
   const tutors = useAppSelector(selectTutors);
   const status = useAppSelector(selectTutorsStatus);
   const error = useAppSelector(selectTutorsError);
+  const favoritesCount = useAppSelector(selectFavoritesCount);
 
   const [priceMax, setPriceMax] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -53,9 +55,8 @@ export const Home: React.FC = () => {
             Репетиторы МФТИ — быстро, честно, эффективно
           </h1>
           <p className={styles.subtitle}>
-            Найдите идеального репетитора среди студентов и выпускников
-            Физтеха. Безопасно, только реальные отзывы, проверенные
-            преподаватели.
+            Найдите идеального репетитора среди студентов и выпускников Физтеха.
+            Безопасно, только реальные отзывы, проверенные преподаватели.
           </p>
           <div className={styles.heroButtons}>
             <Button variant="primary" size="large" onClick={() => {}}>
@@ -67,6 +68,13 @@ export const Home: React.FC = () => {
               onClick={() => navigate('/tutor/create')}
             >
               Стать репетитором
+            </Button>
+            <Button
+              variant="secondary"
+              size="large"
+              onClick={() => navigate('/favorites')}
+            >
+              ⭐ Избранное {favoritesCount > 0 && `(${favoritesCount})`}
             </Button>
           </div>
         </div>

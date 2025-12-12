@@ -5,7 +5,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   font-family: inherit;
-  
+
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -24,7 +24,7 @@
 .primary {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  
+
   &:not(:disabled):hover {
     background: linear-gradient(135deg, #5568d3 0%, #653a8b 100%);
   }
@@ -34,7 +34,7 @@
   background: white;
   color: #667eea;
   border: 2px solid #667eea;
-  
+
   &:not(:disabled):hover {
     background: #f7f7ff;
   }
@@ -43,7 +43,7 @@
 .danger {
   background: #e74c3c;
   color: white;
-  
+
   &:not(:disabled):hover {
     background: #c0392b;
   }

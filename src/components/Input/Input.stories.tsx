@@ -30,11 +30,7 @@ type Story = StoryObj<typeof meta>;
 const InputWrapper = (args: typeof Default.args) => {
   const [value, setValue] = useState(args?.value || '');
   return (
-    <Input
-      {...args}
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-    />
+    <Input {...args} value={value} onChange={(e) => setValue(e.target.value)} />
   );
 };
 

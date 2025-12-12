@@ -23,21 +23,21 @@
   font-size: 16px;
   font-family: inherit;
   transition: all 0.3s ease;
-  
+
   &:focus {
     outline: none;
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
   }
-  
+
   &:disabled {
     background-color: #f5f5f5;
     cursor: not-allowed;
   }
-  
+
   &.error {
     border-color: #e74c3c;
-    
+
     &:focus {
       box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
     }

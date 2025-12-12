@@ -28,9 +28,7 @@ export const TutorCard: React.FC<TutorCardProps> = ({ tutor, onClick }) => {
           <h3 className={styles.name}>
             {tutor.first_name} {tutor.last_name}
           </h3>
-          {tutor.faculty && (
-            <p className={styles.faculty}>{tutor.faculty}</p>
-          )}
+          {tutor.faculty && <p className={styles.faculty}>{tutor.faculty}</p>}
         </div>
       </div>
 

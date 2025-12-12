@@ -211,8 +211,8 @@ export const TutorForm: React.FC = () => {
                 {status === 'loading'
                   ? 'Сохранение...'
                   : isEdit
-                  ? 'Сохранить изменения'
-                  : 'Создать профиль'}
+                    ? 'Сохранить изменения'
+                    : 'Создать профиль'}
               </Button>
               <Button
                 type="button"

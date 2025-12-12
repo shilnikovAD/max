@@ -1,7 +1,10 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { fetchTutorById, clearCurrentTutor } from '@/features/tutors/tutorsSlice';
+import {
+  fetchTutorById,
+  clearCurrentTutor,
+} from '@/features/tutors/tutorsSlice';
 import {
   selectCurrentTutor,
   selectTutorsStatus,

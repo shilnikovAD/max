@@ -3,9 +3,11 @@ import { Home } from './pages/Home';
 import { TutorDetail } from './pages/TutorDetail';
 import { TutorForm } from './pages/TutorForm';
 import { About } from './pages/About';
+import { Favorites } from './pages/Favorites';
 import './styles/global.scss';
 
-const BASE_PATH = import.meta.env.BASE_URL || '/max/';
+// Use BASE_URL from Vite config (/ for dev, /max/ for production)
+const BASE_PATH = import.meta.env.BASE_URL;
 
 function App() {
   return (
@@ -16,6 +18,7 @@ function App() {
         <Route path="/tutor/create" element={<TutorForm />} />
         <Route path="/tutor/:id/edit" element={<TutorForm />} />
         <Route path="/about" element={<About />} />
+        <Route path="/favorites" element={<Favorites />} />
       </Routes>
     </BrowserRouter>
   );

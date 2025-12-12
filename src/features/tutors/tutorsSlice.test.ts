@@ -26,9 +26,7 @@ describe('tutors reducer', () => {
   };
 
   it('should return the initial state', () => {
-    expect(tutorsReducer(undefined, { type: 'unknown' })).toEqual(
-      initialState
-    );
+    expect(tutorsReducer(undefined, { type: 'unknown' })).toEqual(initialState);
   });
 
   it('should handle setFilters', () => {

@@ -19,6 +19,12 @@ A modern web application marketplace platform connecting students and parents wi
 - [Database Schema](#database-schema)
 - [Contact](#contact)
 
+---
+
+> ⚡ **Быстрый старт**: См. [QUICKSTART.md](QUICKSTART.md) для минимальных шагов запуска (5 минут)
+> 
+> 📘 **Подробное руководство**: См. [SETUP_GUIDE.md](SETUP_GUIDE.md) для полных инструкций с решением проблем
+
 ## 🎯 Overview
 
 FizTech Tutors provides a simple way for users (school students, university students, parents) to find tutors from MIPT (Moscow Institute of Physics and Technology), and for MIPT students/alumni to find students for tutoring.
@@ -41,7 +47,8 @@ FizTech Tutors provides a simple way for users (school students, university stud
 - View detailed tutor profiles with reviews
 - Submit lesson requests
 - Chat with tutors within lesson requests
-- Save favorite tutors
+- **Save favorite tutors** - Add tutors to favorites for quick access
+- **Favorites page** - View all saved tutors in one place
 - Leave reviews after completed lessons
 
 ### For Tutors
@@ -322,10 +329,21 @@ Stories are available for:
 
 ### E2E Tests (Playwright)
 
-End-to-end tests for critical user flows:
+End-to-end tests for critical user flows.
+
+**⚠️ Important**: Before running E2E tests, install Playwright browsers:
 
 ```bash
-npm run e2e
+npx playwright install
+```
+
+**Note**: If browser installation fails due to network issues, the application will still work perfectly. E2E tests are optional for development.
+
+Run E2E tests:
+
+```bash
+npm run e2e          # Headless mode
+npm run e2e:ui       # Interactive mode with UI
 ```
 
 **Test scenarios:**
@@ -334,6 +352,9 @@ npm run e2e
 3. Create new tutor profile
 4. Search tutors by name
 5. Navigate between pages
+6. Add/remove tutors to/from favorites
+7. View favorites page
+8. Check empty favorites state
 
 ## 📦 Deployment
 
@@ -446,7 +467,7 @@ GET /api/v1/tutors?subject_id=1&level=ege&price_max=2000&sort=rating_desc&page=1
 
 ```json
 {
-  "items": [...],
+  "items": ["..."],
   "page": 1,
   "page_size": 20,
   "total": 132
