@@ -130,4 +130,52 @@ test.describe('Tutors Flow', () => {
     const tutorCards = page.locator('[class*="tutorCard"]');
     await expect(tutorCards.first()).toBeVisible();
   });
+
+  test('should add and remove tutor from favorites', async ({ page }) => {
+    await page.goto('/');
+
+    // Wait for first tutor card to be visible
+    const firstTutorCard = page.locator('[class*="tutorCard"]').first();
+    await expect(firstTutorCard).toBeVisible();
+
+    // Click on first tutor card to go to detail page
+    await firstTutorCard.click();
+
+    // Wait for navigation to detail page
+    await page.waitForURL(/\/tutor\/\d+/);
+
+    // Find and click the favorites button (should show "Добавить в избранное" initially)
+    const favButton = page.getByRole('button', {
+      name: /добавить в избранное/i,
+    });
+    await expect(favButton).toBeVisible();
+    await favButton.click();
+
+    // After clicking, button text should change to "Убрать из избранного"
+    await expect(
+      page.getByRole('button', { name: /убрать из избранного/i })
+    ).toBeVisible();
+
+    // Navigate back to home and then back to detail page
+    await page.goto('/');
+    await expect(firstTutorCard).toBeVisible();
+    await firstTutorCard.click();
+    await page.waitForURL(/\/tutor\/\d+/);
+
+    // Verify favorites state persisted (button should show "Убрать из избранного")
+    await expect(
+      page.getByRole('button', { name: /убрать из избранного/i })
+    ).toBeVisible();
+
+    // Click to remove from favorites
+    const removeButton = page.getByRole('button', {
+      name: /убрать из избранного/i,
+    });
+    await removeButton.click();
+
+    // Button should change back to "Добавить в избранное"
+    await expect(
+      page.getByRole('button', { name: /добавить в избранное/i })
+    ).toBeVisible();
+  });
 });
