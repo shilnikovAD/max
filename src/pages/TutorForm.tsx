@@ -82,7 +82,10 @@ export const TutorForm: React.FC = () => {
     }
   };
 
-  const handleChange = (field: keyof CreateTutorDto, value: any) => {
+  const handleChange = (
+    field: keyof CreateTutorDto,
+    value: string | number | number[] | string[] | undefined
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -175,7 +178,10 @@ export const TutorForm: React.FC = () => {
                 className={styles.select}
                 value={formData.format}
                 onChange={(e) =>
-                  handleChange('format', e.target.value as any)
+                  handleChange(
+                    'format',
+                    e.target.value as 'ONLINE' | 'OFFLINE' | 'BOTH'
+                  )
                 }
                 required
               >

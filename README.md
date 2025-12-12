@@ -1,18 +1,22 @@
 # FizTech Tutors
 
-A marketplace platform connecting students and parents with MIPT-affiliated tutors for personalized education in physics, mathematics, computer science, and other subjects.
+A modern web application marketplace platform connecting students and parents with MIPT-affiliated tutors for personalized education in physics, mathematics, computer science, and other subjects.
+
+**Stage 2 Implementation**: Full-stack application built with React, TypeScript, Redux Toolkit, and comprehensive testing.
 
 ## 📋 Table of Contents
 
 - [Overview](#overview)
+- [Demo](#demo)
 - [Features](#features)
-- [Project Structure](#project-structure)
 - [Technical Stack](#technical-stack)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Development](#development)
+- [Testing](#testing)
+- [Deployment](#deployment)
 - [API Documentation](#api-documentation)
 - [Database Schema](#database-schema)
-- [Getting Started](#getting-started)
-- [User Roles](#user-roles)
-- [Filtering System](#filtering-system)
 - [Contact](#contact)
 
 ## 🎯 Overview
@@ -55,31 +59,89 @@ FizTech Tutors provides a simple way for users (school students, university stud
 - Moderate reviews
 - View platform statistics
 
+## 🎬 Demo
+
+**Live Demo**: [https://shilnikovad.github.io/max/](https://shilnikovad.github.io/max/)
+
+The application is deployed on GitHub Pages and uses mock data for demonstration purposes.
+
+## 🛠 Technical Stack
+
+### Frontend
+- **TypeScript** - Type-safe JavaScript
+- **React 18** - UI library with functional components and hooks
+- **Redux Toolkit** - State management with createAsyncThunk
+- **React Router v6** - Client-side routing
+- **Vite** - Fast build tool and dev server
+- **SCSS Modules** - Component-scoped styling
+- **Axios** - HTTP client for API requests
+
+### Testing
+- **Jest** - Unit testing framework
+- **React Testing Library** - Component testing
+- **Storybook** - Component development and documentation
+- **Playwright** - End-to-end testing
+
+### Code Quality
+- **ESLint** - Code linting
+- **Prettier** - Code formatting
+- **TypeScript strict mode** - Enhanced type checking
+
+### Backend (Planned)
+- REST API with PostgreSQL database
+- See `api/openapi.yaml` for full API specification
+
 ## 📁 Project Structure
 
 ```
 max/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml         # GitHub Actions CI/CD
+├── .storybook/                # Storybook configuration
 ├── api/
-│   └── openapi.yaml          # OpenAPI 3.0.3 specification
+│   └── openapi.yaml           # OpenAPI 3.0.3 specification
 ├── content/
-│   └── pages.md              # Website page content (Russian)
+│   └── pages.md               # Website page content
 ├── db/
-│   └── migrations/
-│       ├── 001_initial_schema.sql   # Database schema
-│       └── 002_sample_data.sql      # Sample/test data
+│   └── migrations/            # Database schema and sample data
+├── e2e/
+│   └── tutors.spec.ts         # Playwright E2E tests
+├── src/
+│   ├── app/
+│   │   ├── store.ts           # Redux store configuration
+│   │   └── hooks.ts           # Typed Redux hooks
+│   ├── components/            # Reusable UI components
+│   │   ├── Button/
+│   │   ├── Input/
+│   │   ├── Card/
+│   │   └── TutorCard/
+│   ├── features/
+│   │   └── tutors/            # Tutors feature slice
+│   │       ├── tutorsSlice.ts
+│   │       ├── tutorsSelectors.ts
+│   │       └── tutorsSlice.test.ts
+│   ├── pages/                 # Application pages
+│   │   ├── Home.tsx
+│   │   ├── TutorDetail.tsx
+│   │   ├── TutorForm.tsx
+│   │   └── About.tsx
+│   ├── services/
+│   │   ├── api.ts             # API client
+│   │   └── mockData.ts        # Mock data for development
+│   ├── styles/
+│   │   └── global.scss        # Global styles
+│   ├── types/
+│   │   └── tutor.ts           # TypeScript type definitions
+│   ├── App.tsx                # Main app component
+│   └── main.tsx               # Application entry point
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
+├── jest.config.js
+├── playwright.config.ts
 └── README.md
 ```
-
-## 🛠 Technical Stack (Recommended)
-
-| Component | Technology |
-|-----------|------------|
-| Frontend | Vue 3 + TypeScript |
-| Backend | Spring Boot (Java/Kotlin) or Node.js (NestJS) |
-| Database | PostgreSQL |
-| Auth | JWT (access + refresh tokens) |
-| Password Hashing | bcrypt or argon2 |
-| Deployment | Docker Compose |
 
 ## 📖 API Documentation
 
@@ -171,13 +233,136 @@ review_status: VISIBLE, HIDDEN, PENDING
 
 ### Prerequisites
 
-- PostgreSQL 14+
-- Node.js 18+ (for NestJS) or Java 17+ (for Spring Boot)
-- Docker & Docker Compose (optional)
+- **Node.js** 18+ and npm
+- Git
 
-### Database Setup
+### Installation
 
-1. Create database:
+1. Clone the repository:
+```bash
+git clone https://github.com/shilnikovAD/max.git
+cd max
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Create environment file:
+```bash
+cp .env.example .env
+```
+
+4. Start development server:
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:5173`
+
+## 💻 Development
+
+### Available Scripts
+
+- `npm run dev` - Start development server with hot reload
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build locally
+- `npm run lint` - Run ESLint
+- `npm run lint:fix` - Fix linting issues
+- `npm run format` - Format code with Prettier
+- `npm test` - Run unit tests
+- `npm run test:watch` - Run tests in watch mode
+- `npm run test:coverage` - Generate test coverage report
+- `npm run storybook` - Start Storybook on port 6006
+- `npm run build-storybook` - Build Storybook for deployment
+- `npm run e2e` - Run Playwright E2E tests
+- `npm run e2e:ui` - Run E2E tests with UI
+
+### Mock Data
+
+The application uses mock data by default for development. To configure:
+
+```env
+# .env file
+VITE_USE_MOCK_DATA=true  # Use mock data
+VITE_API_BASE_URL=/api/v1  # API base URL (when using real backend)
+```
+
+## 🧪 Testing
+
+This project includes comprehensive testing:
+
+### Unit Tests (Jest + React Testing Library)
+
+Tests for Redux reducers, selectors, and components:
+
+```bash
+npm test
+npm run test:coverage
+```
+
+**Coverage includes:**
+- Redux slice reducers (tutorsSlice.test.ts)
+- Button component (Button.test.tsx)
+- Input component (Input.test.tsx)
+
+### Component Tests (Storybook)
+
+Interactive component documentation and visual testing:
+
+```bash
+npm run storybook
+```
+
+Stories are available for:
+- Button component with all variants
+- Input component with all states
+- Card component with different styles
+
+### E2E Tests (Playwright)
+
+End-to-end tests for critical user flows:
+
+```bash
+npm run e2e
+```
+
+**Test scenarios:**
+1. Browse tutors catalog and view details
+2. Filter tutors by price
+3. Create new tutor profile
+4. Search tutors by name
+5. Navigate between pages
+
+## 📦 Deployment
+
+### GitHub Pages
+
+The project is configured for automatic deployment to GitHub Pages:
+
+1. Push to `main` branch
+2. GitHub Actions will build and deploy automatically
+3. Site will be available at `https://[username].github.io/max/`
+
+### Manual Deployment
+
+Build for production:
+
+```bash
+npm run build
+```
+
+The `dist` folder contains the production build ready for deployment to any static hosting service:
+- **Vercel**: `vercel --prod`
+- **Netlify**: Drag and drop `dist` folder
+- **GitHub Pages**: Automatic via GitHub Actions
+
+### Database Setup (Backend)
+
+For production with a real backend:
+
+1. Create PostgreSQL database:
 ```bash
 createdb fiztech_tutors
 ```
@@ -188,18 +373,11 @@ psql -d fiztech_tutors -f db/migrations/001_initial_schema.sql
 psql -d fiztech_tutors -f db/migrations/002_sample_data.sql  # Optional: sample data
 ```
 
-### API Development
-
-1. Generate server stubs from OpenAPI spec:
-```bash
-# For Node.js
-npx openapi-generator-cli generate -i api/openapi.yaml -g nodejs-express-server -o server/
-
-# For Spring Boot
-openapi-generator-cli generate -i api/openapi.yaml -g spring -o server/
+3. Configure environment:
+```env
+VITE_USE_MOCK_DATA=false
+VITE_API_BASE_URL=https://your-api-domain.com/api/v1
 ```
-
-2. Implement business logic in generated controllers
 
 ## 👥 User Roles
 

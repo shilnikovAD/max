@@ -15,10 +15,23 @@ module.exports = {
     '!src/main.tsx',
   ],
   transform: {
-    '^.+\\.tsx?$': ['ts-jest', {
-      tsconfig: {
-        jsx: 'react-jsx',
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        tsconfig: {
+          jsx: 'react-jsx',
+          esModuleInterop: true,
+          allowSyntheticDefaultImports: true,
+        },
       },
-    }],
+    ],
+  },
+  globals: {
+    'import.meta': {
+      env: {
+        VITE_API_BASE_URL: '/api/v1',
+        VITE_USE_MOCK_DATA: 'true',
+      },
+    },
   },
 };

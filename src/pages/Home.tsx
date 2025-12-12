@@ -27,7 +27,7 @@ export const Home: React.FC = () => {
   }, [dispatch]);
 
   const handleFilterChange = () => {
-    const filters: any = {};
+    const filters: { price_max?: number } = {};
     if (priceMax) {
       filters.price_max = parseInt(priceMax, 10);
     }
