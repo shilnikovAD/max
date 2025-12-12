@@ -28,7 +28,7 @@ export const TutorForm: React.FC = () => {
     bio: '',
     education: '',
     faculty: '',
-    graduation_year: undefined,
+    graduation_year: new Date().getFullYear(),
     experience_years: 0,
     price_per_hour: 1000,
     format: 'BOTH',

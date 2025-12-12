@@ -5,9 +5,11 @@ import { TutorForm } from './pages/TutorForm';
 import { About } from './pages/About';
 import './styles/global.scss';
 
+const BASE_PATH = import.meta.env.BASE_URL || '/max/';
+
 function App() {
   return (
-    <BrowserRouter basename="/max">
+    <BrowserRouter basename={BASE_PATH}>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/tutor/:id" element={<TutorDetail />} />

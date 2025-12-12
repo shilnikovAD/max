@@ -68,9 +68,10 @@ export const tutorsApi = {
   createTutor: async (data: CreateTutorDto): Promise<TutorDetails> => {
     if (USE_MOCK_DATA) {
       await delay(500);
+      const timestamp = Date.now();
       const newTutor: TutorDetails = {
-        id: Date.now(),
-        user_id: Date.now(),
+        id: timestamp,
+        user_id: timestamp + 1000, // Offset to ensure unique ID
         first_name: 'Новый',
         last_name: 'Репетитор',
         ...data,
