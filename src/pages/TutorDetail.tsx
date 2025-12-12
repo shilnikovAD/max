@@ -7,6 +7,8 @@ import {
   selectTutorsStatus,
   selectTutorsError,
 } from '@/features/tutors/tutorsSelectors';
+import { toggleFavorite } from '@/features/favorites/favoritesSlice';
+import { selectIsFavorite } from '@/features/favorites/favoritesSelectors';
 import { Button } from '@/components/Button/Button';
 import { Card } from '@/components/Card/Card';
 import styles from './TutorDetail.module.scss';
@@ -18,6 +20,7 @@ export const TutorDetail: React.FC = () => {
   const tutor = useAppSelector(selectCurrentTutor);
   const status = useAppSelector(selectTutorsStatus);
   const error = useAppSelector(selectTutorsError);
+  const isFavorite = useAppSelector(selectIsFavorite(tutor?.id || 0));
 
   useEffect(() => {
     if (id) {
@@ -165,8 +168,12 @@ export const TutorDetail: React.FC = () => {
             <Button variant="primary" size="large">
               Отправить заявку
             </Button>
-            <Button variant="secondary" size="large">
-              Добавить в избранное
+            <Button
+              variant="secondary"
+              size="large"
+              onClick={() => tutor && dispatch(toggleFavorite(tutor.id))}
+            >
+              {isFavorite ? '❤️ Убрать из избранного' : '🤍 Добавить в избранное'}
             </Button>
           </div>
         </Card>
