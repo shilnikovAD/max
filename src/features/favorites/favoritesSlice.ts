@@ -8,7 +8,15 @@ interface FavoritesState {
 const loadFavoritesFromStorage = (): number[] => {
   try {
     const stored = localStorage.getItem('favorites');
-    return stored ? JSON.parse(stored) : [];
+    if (!stored) return [];
+    
+    const parsed = JSON.parse(stored);
+    // Validate that parsed data is an array of numbers
+    if (Array.isArray(parsed) && parsed.every((item) => typeof item === 'number')) {
+      return parsed;
+    }
+    console.warn('Invalid favorites data in localStorage, resetting to empty array');
+    return [];
   } catch (error) {
     console.error('Failed to load favorites from localStorage:', error);
     return [];

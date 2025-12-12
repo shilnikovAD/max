@@ -134,11 +134,11 @@ test.describe('Tutors Flow', () => {
   test('should add and remove tutor from favorites', async ({ page }) => {
     await page.goto('/');
 
-    // Wait for tutors to load
-    await page.waitForTimeout(1000);
+    // Wait for first tutor card to be visible
+    const firstTutorCard = page.locator('[class*="tutorCard"]').first();
+    await expect(firstTutorCard).toBeVisible();
 
     // Click on first tutor card to go to detail page
-    const firstTutorCard = page.locator('[class*="tutorCard"]').first();
     await firstTutorCard.click();
 
     // Wait for navigation to detail page
@@ -158,7 +158,7 @@ test.describe('Tutors Flow', () => {
 
     // Navigate back to home and then back to detail page
     await page.goto('/');
-    await page.waitForTimeout(500);
+    await expect(firstTutorCard).toBeVisible();
     await firstTutorCard.click();
     await page.waitForURL(/\/tutor\/\d+/);
 

@@ -20,7 +20,7 @@ export const TutorDetail: React.FC = () => {
   const tutor = useAppSelector(selectCurrentTutor);
   const status = useAppSelector(selectTutorsStatus);
   const error = useAppSelector(selectTutorsError);
-  const isFavorite = useAppSelector(selectIsFavorite(tutor?.id || 0));
+  const isFavorite = useAppSelector(selectIsFavorite(tutor?.id ?? -1));
 
   useEffect(() => {
     if (id) {
