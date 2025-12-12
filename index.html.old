@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FizTech Tutors — платформа для поиска репетиторов из МФТИ. Безопасно, честно, эффективно. Только студенты и выпускники МФТИ.">
+  <title>FizTech Tutors — Репетиторы МФТИ</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container">
+      <a href="#" class="logo">
+        <span class="logo-icon">📚</span>
+        <span class="logo-text">FizTech Tutors</span>
+      </a>
+      <nav class="main-nav">
+        <a href="#trust">Гарантии</a>
+        <a href="#features">Функции</a>
+        <a href="#how">Как это работает</a>
+        <a href="#api">API</a>
+        <a href="#tutors">Репетиторы</a>
+        <a href="#contacts">Контакты</a>
+      </nav>
+      <button class="mobile-menu-btn" aria-label="Меню">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="hero" class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1>Репетиторы МФТИ — быстро, честно, эффективно</h1>
+        <p class="hero-subtitle">Найдите идеального репетитора среди студентов и выпускников Физтеха. Безопасно, только реальные отзывы, проверенные преподаватели.</p>
+        <div class="hero-buttons">
+          <a href="#tutors" class="btn-primary">Найти репетитора</a>
+          <a href="#contacts" class="btn-secondary">Оставить заявку</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="stat-number">100+</span>
+            <span class="stat-label">Репетиторов</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">500+</span>
+            <span class="stat-label">Учеников</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">4.9</span>
+            <span class="stat-label">Средний рейтинг</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust Section -->
+  <section id="trust" class="trust">
+    <div class="container">
+      <h2 class="section-title">Почему нам доверяют</h2>
+      <div class="trust-grid">
+        <div class="trust-card">
+          <div class="trust-icon">🔒</div>
+          <h3>Безопасность и честность</h3>
+          <p>Все репетиторы проходят верификацию. Мы проверяем принадлежность к МФТИ и подтверждаем личность каждого преподавателя.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-icon">⭐</div>
+          <h3>Только реальные отзывы</h3>
+          <p>Отзывы могут оставлять только те, кто действительно занимался с репетитором. Никаких накруток и фейков.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-icon">🎓</div>
+          <h3>Репетиторы из МФТИ</h3>
+          <p>Все наши репетиторы — студенты или выпускники Московского физико-технического института.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features">
+    <div class="container">
+      <h2 class="section-title">Функции, которые выделяют нас</h2>
+      <p class="section-subtitle">Мы создали платформу с учётом реальных потребностей учеников и репетиторов</p>
+      <div class="features-grid">
+        <article class="feature-card">
+          <div class="feature-icon">💬</div>
+          <h3>Встроенный чат</h3>
+          <p>Общайтесь с репетитором прямо на платформе. Обсуждайте детали занятий, задавайте вопросы и согласовывайте расписание.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">🧩</div>
+          <h3>Открытый REST API</h3>
+          <p>Чётко задокументированное REST API для фронтенда и интеграций: поиск репетиторов, управление заявками и профилями, работа с расписанием и отзывами. JSON-формат, понятные коды ответов, аутентификация по токенам.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">🎯</div>
+          <h3>Умный подбор</h3>
+          <p>Пройдите короткий опрос, и мы предложим вам 3 лучших репетитора, идеально подходящих под ваши цели и бюджет.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">📅</div>
+          <h3>Онлайн-расписание</h3>
+          <p>Смотрите свободные слоты репетитора и бронируйте удобное время прямо на сайте без лишних звонков.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">🎬</div>
+          <h3>Видео-визитки</h3>
+          <p>Посмотрите короткое видео-знакомство с репетитором до первого занятия, чтобы убедиться, что вам подходит его стиль.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Диагностика знаний</h3>
+          <p>Пройдите тест, и система покажет ваш уровень и подберёт репетиторов, специализирующихся на нужных темах.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon">❤️</div>
+          <h3>Избранное</h3>
+          <p>Сохраняйте понравившихся репетиторов в избранное, чтобы легко вернуться к ним позже.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section id="how" class="how-it-works">
+    <div class="container">
+      <h2 class="section-title">Как это работает</h2>
+      <div class="roles-grid">
+        <div class="role-card">
+          <div class="role-header student">
+            <span class="role-icon">👨‍🎓</span>
+            <h3>Для учеников</h3>
+          </div>
+          <ol class="role-steps">
+            <li>Зарегистрируйтесь на платформе</li>
+            <li>Найдите репетитора через каталог или умный подбор</li>
+            <li>Изучите профиль и отзывы</li>
+            <li>Отправьте заявку на занятие</li>
+            <li>Общайтесь через встроенный чат</li>
+            <li>Оставьте отзыв после занятия</li>
+          </ol>
+        </div>
+        <div class="role-card">
+          <div class="role-header tutor">
+            <span class="role-icon">👨‍🏫</span>
+            <h3>Для репетиторов</h3>
+          </div>
+          <ol class="role-steps">
+            <li>Зарегистрируйтесь как репетитор</li>
+            <li>Заполните профиль и загрузите видео-визитку</li>
+            <li>Укажите предметы, уровни и цены</li>
+            <li>Пройдите модерацию</li>
+            <li>Получайте заявки от учеников</li>
+            <li>Проводите занятия и развивайте рейтинг</li>
+          </ol>
+        </div>
+        <div class="role-card">
+          <div class="role-header admin">
+            <span class="role-icon">🛡️</span>
+            <h3>Модерация</h3>
+          </div>
+          <ul class="role-steps">
+            <li>Проверка всех репетиторов</li>
+            <li>Модерация отзывов</li>
+            <li>Поддержка пользователей</li>
+            <li>Разрешение спорных ситуаций</li>
+            <li>Контроль качества контента</li>
+            <li>Безопасность платформы</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- API Section -->
+  <section id="api" class="api">
+    <div class="container">
+      <h2 class="section-title">Описание API для взаимодействия с бэкендом (REST API)</h2>
+      <p class="section-subtitle">REST API для работы с репетиторами, заявками и расписанием</p>
+      <ul class="api-list">
+        <li>API (REST): интеграция с внешними сервисами + собственные endpoint'ы при необходимости.</li>
+        <li>GET /api/tutors?subject={subject}&page={n} — список репетиторов с фильтрацией и пагинацией.</li>
+        <li>GET /api/tutors/{id} — детали репетитора (профиль, предметы, ставки, рейтинг).</li>
+        <li>POST /api/requests — создание заявки ученика на занятие с выбранным репетитором.</li>
+        <li>GET /api/requests?role={student|tutor} — список заявок для ученика или репетитора.</li>
+        <li>PATCH /api/requests/{id} — изменение статуса заявки (подтверждение, отмена и т.п.).</li>
+        <li>GET /api/schedule/{tutorId} — расписание и свободные слоты репетитора.</li>
+        <li>POST /api/schedule/{tutorId}/book — бронирование слота учеником.</li>
+        <li>Клиент хранит токен аутентификации (JWT/access token) в защищённом хранилище, а избранных репетиторов и фильтры поиска — в localStorage.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Tutors Preview Section -->
+  <section id="tutors" class="tutors">
+    <div class="container">
+      <h2 class="section-title">Наши репетиторы</h2>
+      <p class="section-subtitle">Знакомьтесь с некоторыми из наших преподавателей</p>
+      <div class="tutor-grid">
+        <!-- Tutor Card 1 -->
+        <article class="tutor-card">
+          <div class="tutor-avatar">
+            <div class="avatar-placeholder">ИП</div>
+          </div>
+          <div class="tutor-info">
+            <h4 class="tutor-name">Иван Петров</h4>
+            <p class="tutor-faculty">ФРКТ, 4 курс</p>
+            <div class="tutor-subjects">
+              <span class="subject-tag">Физика</span>
+              <span class="subject-tag">Математика</span>
+            </div>
+            <div class="tutor-meta">
+              <span class="tutor-rating">⭐ 4.9</span>
+              <span class="tutor-reviews">(23 отзыва)</span>
+            </div>
+            <div class="tutor-levels">ЕГЭ, ОГЭ, Олимпиады</div>
+            <div class="tutor-price">
+              <span class="price-value">1500 ₽/час</span>
+              <span class="tutor-format">Онлайн</span>
+            </div>
+          </div>
+          <a href="#contacts" class="btn-card">Оставить заявку</a>
+        </article>
+
+        <!-- Tutor Card 2 -->
+        <article class="tutor-card">
+          <div class="tutor-avatar">
+            <div class="avatar-placeholder">АС</div>
+          </div>
+          <div class="tutor-info">
+            <h4 class="tutor-name">Анна Сидорова</h4>
+            <p class="tutor-faculty">ФОПФ, выпускница 2023</p>
+            <div class="tutor-subjects">
+              <span class="subject-tag">Физика</span>
+            </div>
+            <div class="tutor-meta">
+              <span class="tutor-rating">⭐ 5.0</span>
+              <span class="tutor-reviews">(47 отзывов)</span>
+            </div>
+            <div class="tutor-levels">ЕГЭ, Олимпиады, ДВИ</div>
+            <div class="tutor-price">
+              <span class="price-value">2000 ₽/час</span>
+              <span class="tutor-format">Онлайн / Офлайн</span>
+            </div>
+          </div>
+          <a href="#contacts" class="btn-card">Оставить заявку</a>
+        </article>
+
+        <!-- Tutor Card 3 -->
+        <article class="tutor-card">
+          <div class="tutor-avatar">
+            <div class="avatar-placeholder">МК</div>
+          </div>
+          <div class="tutor-info">
+            <h4 class="tutor-name">Михаил Козлов</h4>
+            <p class="tutor-faculty">ФПМИ, 3 курс</p>
+            <div class="tutor-subjects">
+              <span class="subject-tag">Математика</span>
+              <span class="subject-tag">Информатика</span>
+            </div>
+            <div class="tutor-meta">
+              <span class="tutor-rating">⭐ 4.8</span>
+              <span class="tutor-reviews">(31 отзыв)</span>
+            </div>
+            <div class="tutor-levels">ЕГЭ, ОГЭ, Программирование</div>
+            <div class="tutor-price">
+              <span class="price-value">1800 ₽/час</span>
+              <span class="tutor-format">Онлайн</span>
+            </div>
+          </div>
+          <a href="#contacts" class="btn-card">Оставить заявку</a>
+        </article>
+
+        <!-- Tutor Card 4 -->
+        <article class="tutor-card">
+          <div class="tutor-avatar">
+            <div class="avatar-placeholder">ЕВ</div>
+          </div>
+          <div class="tutor-info">
+            <h4 class="tutor-name">Елена Волкова</h4>
+            <p class="tutor-faculty">ФАКТ, 2 курс</p>
+            <div class="tutor-subjects">
+              <span class="subject-tag">Математика</span>
+            </div>
+            <div class="tutor-meta">
+              <span class="tutor-rating">⭐ 4.7</span>
+              <span class="tutor-reviews">(12 отзывов)</span>
+            </div>
+            <div class="tutor-levels">ОГЭ, 7-9 класс</div>
+            <div class="tutor-price">
+              <span class="price-value">1200 ₽/час</span>
+              <span class="tutor-format">Онлайн / Офлайн</span>
+            </div>
+          </div>
+          <a href="#contacts" class="btn-card">Оставить заявку</a>
+        </article>
+
+        <!-- Tutor Card 5 -->
+        <article class="tutor-card">
+          <div class="tutor-avatar">
+            <div class="avatar-placeholder">ДН</div>
+          </div>
+          <div class="tutor-info">
+            <h4 class="tutor-name">Дмитрий Новиков</h4>
+            <p class="tutor-faculty">ФЭФМ, выпускник 2022</p>
+            <div class="tutor-subjects">
+              <span class="subject-tag">Физика</span>
+              <span class="subject-tag">Математика</span>
+            </div>
+            <div class="tutor-meta">
+              <span class="tutor-rating">⭐ 4.9</span>
+              <span class="tutor-reviews">(56 отзывов)</span>
+            </div>
+            <div class="tutor-levels">ЕГЭ, ДВИ, 1 курс вуза</div>
+            <div class="tutor-price">
+              <span class="price-value">2500 ₽/час</span>
+              <span class="tutor-format">Офлайн (Москва)</span>
+            </div>
+          </div>
+          <a href="#contacts" class="btn-card">Оставить заявку</a>
+        </article>
+
+        <!-- Tutor Card 6 -->
+        <article class="tutor-card">
+          <div class="tutor-avatar">
+            <div class="avatar-placeholder">ОМ</div>
+          </div>
+          <div class="tutor-info">
+            <h4 class="tutor-name">Ольга Морозова</h4>
+            <p class="tutor-faculty">ФРКТ, 5 курс</p>
+            <div class="tutor-subjects">
+              <span class="subject-tag">Информатика</span>
+            </div>
+            <div class="tutor-meta">
+              <span class="tutor-rating">⭐ 4.8</span>
+              <span class="tutor-reviews">(19 отзывов)</span>
+            </div>
+            <div class="tutor-levels">ЕГЭ, Олимпиады, Python</div>
+            <div class="tutor-price">
+              <span class="price-value">1700 ₽/час</span>
+              <span class="tutor-format">Онлайн</span>
+            </div>
+          </div>
+          <a href="#contacts" class="btn-card">Оставить заявку</a>
+        </article>
+      </div>
+      <div class="tutors-cta">
+        <a href="#contacts" class="btn-primary btn-large">Смотреть всех репетиторов</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contacts" class="contacts">
+    <div class="container">
+      <h2 class="section-title">Связаться с нами</h2>
+      <p class="section-subtitle">Остались вопросы? Мы с удовольствием на них ответим!</p>
+      <div class="contacts-grid">
+        <div class="contact-info">
+          <div class="contact-item">
+            <div class="contact-icon">📧</div>
+            <div class="contact-details">
+              <h4>Email</h4>
+              <a href="mailto:support@fiztechtutors.ru">support@fiztechtutors.ru</a>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">✈️</div>
+            <div class="contact-details">
+              <h4>Telegram</h4>
+              <a href="https://t.me/fiztech_support" target="_blank" rel="noopener noreferrer">@fiztech_support</a>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">🕐</div>
+            <div class="contact-details">
+              <h4>Время ответа</h4>
+              <p>Обычно отвечаем в течение 24 часов</p>
+            </div>
+          </div>
+        </div>
+        <form id="contact-form" class="contact-form">
+          <div class="form-group">
+            <label for="name">Имя</label>
+            <input type="text" id="name" name="name" placeholder="Ваше имя" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="your@email.com" required>
+          </div>
+          <div class="form-group">
+            <label for="message">Сообщение</label>
+            <textarea id="message" name="message" rows="5" placeholder="Ваше сообщение..." required></textarea>
+          </div>
+          <button type="submit" class="btn-primary btn-large btn-full">Отправить сообщение</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <a href="#" class="logo">
+            <span class="logo-icon">📚</span>
+            <span class="logo-text">FizTech Tutors</span>
+          </a>
+          <p>Платформа для поиска репетиторов из МФТИ</p>
+        </div>
+        <div class="footer-links">
+          <h4>Навигация</h4>
+          <a href="#trust">Гарантии</a>
+          <a href="#features">Функции</a>
+          <a href="#how">Как это работает</a>
+          <a href="#tutors">Репетиторы</a>
+          <a href="#contacts">Контакты</a>
+        </div>
+        <div class="footer-contacts">
+          <h4>Контакты</h4>
+          <a href="mailto:support@fiztechtutors.ru">support@fiztechtutors.ru</a>
+          <a href="https://t.me/fiztech_support" target="_blank" rel="noopener noreferrer">Telegram: @fiztech_support</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 FizTech Tutors. Все права защищены.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Minimal JavaScript for interactivity -->
+  <script>
+    // Mobile menu toggle
+    document.addEventListener('DOMContentLoaded', function() {
+      const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+      const mainNav = document.querySelector('.main-nav');
+      
+      if (mobileMenuBtn && mainNav) {
+        mobileMenuBtn.addEventListener('click', function() {
+          mainNav.classList.toggle('active');
+          mobileMenuBtn.classList.toggle('active');
+        });
+        
+        // Close menu when clicking a link
+        mainNav.querySelectorAll('a').forEach(function(link) {
+          link.addEventListener('click', function() {
+            mainNav.classList.remove('active');
+            mobileMenuBtn.classList.remove('active');
+          });
+        });
+      }
+      
+      // Contact form submission handler
+      const contactForm = document.getElementById('contact-form');
+      if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          const formData = new FormData(contactForm);
+          const name = formData.get('name');
+          const email = formData.get('email');
+          const message = formData.get('message');
+          
+          // Simple validation
+          if (name && email && message) {
+            alert('Спасибо за ваше сообщение! Мы свяжемся с вами в ближайшее время.');
+            contactForm.reset();
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
